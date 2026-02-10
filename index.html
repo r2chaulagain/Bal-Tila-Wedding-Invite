@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>25th Anniversary • Bal Kumar & Tila Kumari</title>
+
+  <style>
+    :root{
+      --ink:#1f2230;
+      --muted:rgba(31,34,48,.72);
+
+      --paper: rgba(255,255,255,.88);
+      --paper2: rgba(255,255,255,.76);
+      --line: rgba(31,34,48,.12);
+      --shadow: 0 22px 70px rgba(35,18,10,.18);
+      --radius: 18px;
+
+      --safePad: clamp(10px, 2.2vw, 34px);
+      --contentMax: 1240px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color: var(--ink);
+      overflow-x:hidden;
+      background:#ead6cf;
+    }
+    a{ color:inherit; text-decoration:none; }
+
+    /* FULL PAGE BACKGROUND (BACKGROUND1) */
+    .bg-photo{
+      position:fixed; inset:0; z-index:-4;
+      background-image:url("BACKGROUND1.jpg"); /* change to .png if needed */
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
+      filter:saturate(1.02) contrast(1.02);
+    }
+    .bg-vignette{
+      position:fixed; inset:0; z-index:-3;
+      pointer-events:none;
+      background:
+        radial-gradient(900px 520px at 50% 34%, rgba(255,255,255,.14), rgba(255,255,255,0) 62%),
+        radial-gradient(1100px 700px at 50% 50%, rgba(0,0,0,0) 35%, rgba(0,0,0,.10) 100%);
+    }
+
+    /* SAFE CENTER PANEL */
+    .safe-zone{
+      min-height: 100vh;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      padding: var(--safePad);
+    }
+    .shell{
+      width: min(var(--contentMax), 100%);
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      background: linear-gradient(180deg, var(--paper), var(--paper2));
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+    }
+
+    /* TOP BAR */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(31,34,48,.10);
+      background: rgba(255,255,255,.82);
+    }
+    .namesTop{
+      font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+      font-weight: 950;
+      letter-spacing: -0.4px;
+      font-size: clamp(18px, 2.0vw, 24px);
+      line-height: 1.1;
+      margin-right: 10px;
+    }
+    .nav-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(31,34,48,.14);
+      background: rgba(255,255,255,.78);
+      font-weight:850;
+      cursor:pointer;
+      transition:.18s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn.primary{
+      background: rgba(255,255,255,.92);
+      border-color: rgba(202,163,90,.42);
+      position:relative;
+      box-shadow: 0 12px 30px rgba(202,163,90,.10);
+    }
+    .btn.primary::before{
+      content:"";
+      position:absolute; inset:-1px;
+      border-radius:14px;
+      padding:1px;
+      background: linear-gradient(135deg, rgba(202,163,90,.85), rgba(47,138,97,.55));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events:none;
+    }
+
+    .content{ padding: 12px; }
+
+    /* MAIN GRID */
+    .layout{
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      grid-template-rows: auto auto;
+      gap: 12px;
+      align-items:stretch;
+    }
+
+    .photosBox{ grid-column:1; grid-row:1; }
+    .rightBox{ grid-column:2; grid-row:1; }
+    .bottomBox{ grid-column:1 / span 2; grid-row:2; }
+
+    @media (max-width: 980px){
+      .layout{ grid-template-columns: 1fr; gap:12px; }
+      .photosBox, .rightBox, .bottomBox{ grid-column:1; grid-row:auto; }
+    }
+
+    .card{
+      border:1px solid rgba(31,34,48,.10);
+      background: rgba(255,255,255,.74);
+      border-radius: var(--radius);
+      box-shadow: 0 14px 40px rgba(35,18,10,.10);
+      overflow:hidden;
+    }
+
+    /* LEFT PHOTOS */
+    .gallery{
+      padding: 12px;
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+      /* IMPORTANT: allow the carousel to take space in flex on iOS */
+      min-height: 0;
+    }
+    .galleryHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+
+    .inviteTitle{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(31,34,48,.12);
+      background: rgba(255,255,255,.82);
+      box-shadow: 0 10px 28px rgba(35,18,10,.10);
+      font-weight: 900;
+      color: rgba(31,34,48,.84);
+      font-size: 13.5px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:50%;
+      background: rgba(202,163,90,.95);
+      box-shadow: 0 0 0 3px rgba(202,163,90,.15);
+      flex: 0 0 auto;
+    }
+
+    .galleryHead span{
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 12.5px;
+      white-space: nowrap;
+    }
+
+    /* PHOTO SLIDER BOX — FIXED FOR MOBILE */
+    .carousel{
+      position:relative;
+      border-radius: 16px;
+      overflow:hidden;
+      border: 1px solid rgba(31,34,48,.10);
+      background: rgba(255,255,255,.62);
+
+      /* Desktop max */
+      height: 560px;
+
+      /* IMPORTANT: never collapse */
+      min-height: 360px;
+      width: 100%;
+
+      /* Helps iOS compute layout reliably */
+      flex: 0 0 auto;
+      contain: layout paint size;
+    }
+
+    /* Mobile: responsive height that ALWAYS shows */
+    @media (max-width: 980px){
+      .carousel{
+        height: clamp(360px, 55vh, 520px);
+        min-height: 360px;
+      }
+    }
+
+    .slideImg{
+      position:absolute; inset:0;
+      width:100%;
+      height:100%;
+      object-fit: contain;     /* no cropping */
+      object-position: center;
+      background: rgba(255,255,255,.55);
+      transition: opacity 420ms ease;
+      opacity: 1;
+      will-change: opacity;
+      display:block;
+    }
+
+    /* RIGHT COMBINED CARD */
+    .rightInner{
+      padding: 16px 14px 14px;
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+      height: 100%;
+    }
+
+    .titleBig{
+      font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+      font-weight: 950;
+      font-size: clamp(26px, 2.6vw, 42px);
+      letter-spacing: -0.6px;
+      line-height: 1.05;
+      margin: 6px 0 0;
+      text-align:center;
+    }
+    .rightMessage{
+      margin: 0 auto;
+      max-width: 46ch;
+      color: var(--muted);
+      font-weight: 700;
+      line-height: 1.6;
+      font-size: 14.5px;
+      text-align:center;
+    }
+
+    .divider{
+      height:1px;
+      background: rgba(31,34,48,.10);
+      margin: 4px 0 2px;
+    }
+
+    .info-stack{
+      display:grid;
+      gap: 10px;
+    }
+    .info-item{
+      border:1px solid rgba(31,34,48,.10);
+      background: rgba(255,255,255,.78);
+      border-radius: 16px;
+      padding: 11px 12px;
+    }
+    .info-item .label{
+      color: rgba(31,34,48,.62);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+    }
+    .info-item .value{
+      margin-top: 6px;
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    /* BOTTOM */
+    .bottomInner{
+      padding: 12px 14px;
+      display:flex;
+      gap: 12px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .bottomLeft{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .pill{
+      border:1px solid rgba(31,34,48,.10);
+      background: rgba(255,255,255,.78);
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-weight: 850;
+      color: rgba(31,34,48,.84);
+      font-size: 13.5px;
+      white-space: nowrap;
+    }
+
+    footer{
+      padding: 12px 14px 14px;
+      border-top: 1px solid rgba(31,34,48,.10);
+      color: rgba(31,34,48,.62);
+      font-size: 13px;
+      background: rgba(255,255,255,.66);
+    }
+    .foot{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+    /* Language Gate */
+    .gate{
+      position:fixed; inset:0; z-index:999;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background: rgba(255,255,255,.62);
+      backdrop-filter: blur(10px);
+    }
+    .gate-card{
+      width: min(760px, 100%);
+      border-radius: 22px;
+      border: 1px solid rgba(31,34,48,.14);
+      background: rgba(255,255,255,.92);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .gate-top{
+      padding:18px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      border-bottom: 1px solid rgba(31,34,48,.10);
+      background: rgba(255,255,255,.74);
+    }
+    .badge{
+      width:44px;height:44px;border-radius:16px;
+      display:grid;place-items:center;
+      font-weight: 950;
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(202,163,90,.35);
+    }
+    .gate-title{
+      margin:0;
+      font-size: 20px;
+      font-weight: 950;
+      font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+      letter-spacing:-.2px;
+    }
+    .gate-sub{
+      margin:4px 0 0;
+      color: var(--muted);
+      font-weight: 650;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .gate-body{ padding: 18px; }
+    .gate-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+  </style>
+</head>
+
+<body>
+  <div class="bg-photo" aria-hidden="true"></div>
+  <div class="bg-vignette" aria-hidden="true"></div>
+
+  <!-- Language Gate -->
+  <div class="gate" id="gate">
+    <div class="gate-card">
+      <div class="gate-top">
+        <div class="badge">25</div>
+        <div>
+          <div class="gate-title" id="gateTitle">Choose your preferred language</div>
+          <div class="gate-sub" id="gateSub">Please select one to continue.</div>
+        </div>
+      </div>
+      <div class="gate-body">
+        <div class="gate-actions">
+          <button class="btn primary" id="chooseEn">English</button>
+          <button class="btn" id="chooseNp">नेपाली</button>
+        </div>
+        <div class="pill" style="margin-top:12px;" id="gateNote">
+          You can switch language anytime from the top menu.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="safe-zone">
+    <div class="shell">
+
+      <!-- TOP -->
+      <div class="topbar">
+        <div class="namesTop" id="namesTop">
+          Bal Kumar Chaulagain & Tila Kumari Dhamala Chaulagain
+        </div>
+
+        <div class="nav-actions">
+          <a class="btn primary" id="navRsvp" href="#" target="_blank" rel="noreferrer">RSVP</a>
+          <button class="btn" id="navLang">English / नेपाली</button>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="layout">
+
+          <!-- LEFT: PHOTOS -->
+          <div class="card photosBox">
+            <div class="gallery">
+              <div class="galleryHead">
+                <div class="inviteTitle" id="photoBoxTitle">
+                  <span class="dot" aria-hidden="true"></span>
+                  <span id="inviteText">You’re invited to celebrate 25 years of love</span>
+                </div>
+                <span id="galleryHint">Hover to pause</span>
+              </div>
+
+              <div class="carousel" aria-label="Sliding photo gallery" id="carousel">
+                <img id="slideImg" class="slideImg" alt="Photo slideshow" loading="eager" decoding="async" />
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT -->
+          <div class="card rightBox">
+            <div class="rightInner">
+              <h1 class="titleBig" id="silverTitle">Silver Jubilee Celebration</h1>
+              <p class="rightMessage" id="silverMessage">
+                Please join us for a joyful evening as we honor 25 beautiful years of marriage with family, blessings, food, and music.
+              </p>
+
+              <div class="divider" aria-hidden="true"></div>
+
+              <div class="info-stack">
+                <div class="info-item">
+                  <div class="label" id="labelDate">Date</div>
+                  <div class="value" id="valueDate">March 8, 2026</div>
+                </div>
+                <div class="info-item">
+                  <div class="label" id="labelTime">Time</div>
+                  <div class="value" id="valueTime">5:00 PM – 9:00 PM</div>
+                </div>
+                <div class="info-item">
+                  <div class="label" id="labelVenue">Venue</div>
+                  <div class="value" id="valueVenue">Cary Senior Center Ballroom</div>
+                </div>
+                <div class="info-item">
+                  <div class="label" id="labelContact">Contact</div>
+                  <div class="value" id="valueContact">R2chaulagain@gmail.com • 919-337-8739</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BOTTOM -->
+          <div class="card bottomBox">
+            <div class="bottomInner">
+              <div class="bottomLeft">
+                <a class="btn primary" id="homeRsvpBtn" href="#" target="_blank" rel="noreferrer">✨ RSVP</a>
+                <a class="btn" id="homeDirectionsBtn" href="#" target="_blank" rel="noreferrer">📍 Directions</a>
+              </div>
+
+              <div class="pill" id="homeNote">
+                Date & Time: March 8, 2026 • 5:00 PM – 9:00 PM
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <footer>
+        <div class="foot">
+          <div>© <span id="year"></span> • <span id="footLeft">25th Anniversary Celebration</span></div>
+          <div class="mono" id="footRight">Cary, NC</div>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    // ========= CONFIG =========
+    const RSVP_FORM_URL = "https://docs.google.com/forms/d/1AqY_faE9gmPmM4hy2fl_p94MNwBBIRYELVb05YtWWPw/preview";
+
+    const EVENT_DATE_EN = "March 8, 2026";
+    const EVENT_TIME_EN = "5:00 PM – 9:00 PM";
+
+    const EVENT_DATE_NP = "२०२६ मार्च ८";
+    const EVENT_TIME_NP = "५:०० बेलुका – ९:०० बेलुका";
+
+    const VENUE_EN = "Cary Senior Center Ballroom";
+    const VENUE_NP = "केरी सिनियर सेन्टर बलरूम";
+
+    const VENUE_ADDRESS = "120 Maury Odel Pl, Cary, NC 27513";
+    const MAPS_QUERY = encodeURIComponent(`${VENUE_EN}, ${VENUE_ADDRESS}`);
+    const MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${MAPS_QUERY}`;
+
+    const CONTACT_EMAIL = "R2chaulagain@gmail.com";
+    const CONTACT_PHONE = "919-337-8739";
+
+    const PARENTS_EN = "Bal Kumar Chaulagain & Tila Kumari Dhamala Chaulagain";
+    const PARENTS_NP = "बल कुमार चौलागाईं र टिला कुमारी धमला चौलागाईं";
+
+    const INVITE_EN = "You’re invited to celebrate 25 years of love";
+    const INVITE_NP = "प्रेमका २५ वर्ष मनाउन तपाईंलाई हार्दिक निमन्त्रणा";
+
+    const MSG_EN = "Please join us for a joyful evening as we honor 25 beautiful years of marriage with family, blessings, food, and music.";
+    const MSG_NP = "परिवार, आशीर्वाद, भोजन र संगीतसहित २५ वर्षको वैवाहिक यात्राको सम्मान गर्न तपाईंलाई हार्दिक निमन्त्रणा छ।";
+
+    const STR = {
+      en: {
+        gateTitle: "Choose your preferred language",
+        gateSub: "Please select one to continue.",
+        gateNote: "You can switch language anytime from the top menu.",
+
+        namesTop: PARENTS_EN,
+
+        inviteText: INVITE_EN,
+        galleryHint: "Hover to pause",
+
+        silverTitle: "Silver Jubilee Celebration",
+        silverMessage: MSG_EN,
+
+        labelDate: "Date",
+        labelTime: "Time",
+        labelVenue: "Venue",
+        labelContact: "Contact",
+
+        valueDate: EVENT_DATE_EN,
+        valueTime: EVENT_TIME_EN,
+        valueVenue: VENUE_EN,
+        valueContact: `${CONTACT_EMAIL} • ${CONTACT_PHONE}`,
+
+        homeNote: `Date & Time: ${EVENT_DATE_EN} • ${EVENT_TIME_EN}`,
+        footLeft: "25th Anniversary Celebration",
+        footRight: "Cary, NC"
+      },
+      np: {
+        gateTitle: "कृपया भाषा छनोट गर्नुहोस्",
+        gateSub: "जारी राख्न एउटा भाषा छान्नुहोस्।",
+        gateNote: "तपाईं माथिको मेनुबाट जुनसुकै बेला भाषा परिवर्तन गर्न सक्नुहुन्छ।",
+
+        namesTop: PARENTS_NP,
+
+        inviteText: INVITE_NP,
+        galleryHint: "रोक्न होभर गर्नुहोस्",
+
+        silverTitle: "रजत जयन्ती समारोह",
+        silverMessage: MSG_NP,
+
+        labelDate: "मिति",
+        labelTime: "समय",
+        labelVenue: "स्थान",
+        labelContact: "सम्पर्क",
+
+        valueDate: EVENT_DATE_NP,
+        valueTime: EVENT_TIME_NP,
+        valueVenue: VENUE_NP,
+        valueContact: `${CONTACT_EMAIL} • ${CONTACT_PHONE}`,
+
+        homeNote: `मिति र समय: ${EVENT_DATE_NP} • ${EVENT_TIME_NP}`,
+        footLeft: "२५औँ वैवाहिक वार्षिकोत्सव",
+        footRight: "Cary, NC"
+      }
+    };
+
+    const gate = document.getElementById("gate");
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    document.getElementById("navRsvp").href = RSVP_FORM_URL;
+    document.getElementById("homeRsvpBtn").href = RSVP_FORM_URL;
+    document.getElementById("homeDirectionsBtn").href = MAPS_URL;
+
+    function applyLanguage(lang){
+      const t = STR[lang];
+
+      document.getElementById("gateTitle").textContent = t.gateTitle;
+      document.getElementById("gateSub").textContent = t.gateSub;
+      document.getElementById("gateNote").textContent = t.gateNote;
+
+      document.getElementById("namesTop").textContent = t.namesTop;
+
+      document.getElementById("inviteText").textContent = t.inviteText;
+      document.getElementById("galleryHint").textContent = t.galleryHint;
+
+      document.getElementById("silverTitle").textContent = t.silverTitle;
+      document.getElementById("silverMessage").textContent = t.silverMessage;
+
+      document.getElementById("labelDate").textContent = t.labelDate;
+      document.getElementById("labelTime").textContent = t.labelTime;
+      document.getElementById("labelVenue").textContent = t.labelVenue;
+      document.getElementById("labelContact").textContent = t.labelContact;
+
+      document.getElementById("valueDate").textContent = t.valueDate;
+      document.getElementById("valueTime").textContent = t.valueTime;
+      document.getElementById("valueVenue").textContent = t.valueVenue;
+      document.getElementById("valueContact").textContent = t.valueContact;
+
+      document.getElementById("homeNote").textContent = t.homeNote;
+
+      document.getElementById("footLeft").textContent = t.footLeft;
+      document.getElementById("footRight").textContent = t.footRight;
+
+      localStorage.setItem("invite_lang", lang);
+      document.documentElement.lang = (lang === "np") ? "ne" : "en";
+    }
+
+    document.getElementById("navLang").addEventListener("click", () => {
+      gate.style.display = "flex";
+      const current = localStorage.getItem("invite_lang") || "en";
+      applyLanguage(current);
+    });
+
+    document.getElementById("chooseEn").addEventListener("click", () => { applyLanguage("en"); gate.style.display="none"; });
+    document.getElementById("chooseNp").addEventListener("click", () => { applyLanguage("np"); gate.style.display="none"; });
+
+    const saved = localStorage.getItem("invite_lang");
+    if(!saved){
+      gate.style.display = "flex";
+      applyLanguage("en");
+    }else{
+      applyLanguage(saved);
+    }
+
+    // ========= PHOTO SLIDESHOW (one-by-one, 2x faster) =========
+    const PHOTO_FILES = [
+      "PHOTO1.jpg","PHOTO2.jpg","PHOTO3.jpg","PHOTO4.jpg","PHOTO5.jpg","PHOTO6.jpg"
+    ];
+
+    const slideImg = document.getElementById("slideImg");
+    const carousel = document.getElementById("carousel");
+
+    let idx = 0;
+    let timer = null;
+    let paused = false;
+
+    function candidates(file){
+      const base = file.replace(/\.(jpg|jpeg|png|webp)$/i, "");
+      return [
+        file,
+        base + ".JPG", base + ".jpg",
+        base + ".JPEG", base + ".jpeg",
+        base + ".PNG", base + ".png",
+        base + ".WEBP", base + ".webp"
+      ];
+    }
+
+    function setImageWithFallback(file){
+      const tries = candidates(file);
+      let t = 0;
+
+      function tryNext(){
+        if (t >= tries.length){
+          slideImg.removeAttribute("src");
+          return;
+        }
+        slideImg.onerror = () => { t++; tryNext(); };
+        slideImg.src = "./" + tries[t];
+      }
+      tryNext();
+    }
+
+    function showSlide(nextIndex){
+      slideImg.style.opacity = "0";
+      window.setTimeout(() => {
+        idx = nextIndex;
+        setImageWithFallback(PHOTO_FILES[idx]);
+        slideImg.style.opacity = "1";
+      }, 220);
+    }
+
+    function start(){
+      if (timer) window.clearInterval(timer);
+      timer = window.setInterval(() => {
+        if (paused) return;
+        const next = (idx + 1) % PHOTO_FILES.length;
+        showSlide(next);
+      }, 2500); // 2x faster
+    }
+
+    carousel.addEventListener("mouseenter", () => { paused = true; });
+    carousel.addEventListener("mouseleave", () => { paused = false; });
+
+    carousel.addEventListener("touchstart", () => { paused = true; }, {passive:true});
+    carousel.addEventListener("touchend", () => { paused = false; }, {passive:true});
+
+    setImageWithFallback(PHOTO_FILES[0]);
+    start();
+  </script>
+</body>
+</html>
